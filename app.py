@@ -2,14 +2,14 @@ import streamlit as st
 from chatbot import get_response, SYSTEM_PROMPT
 from storage import load_chat, save_chat
 
-st.set_page_config(page_title="SimpleAssist Chatbot")
+st.set_page_config(page_title="SimpleAssist Chatbot", page_icon="🤖")
 
 st.title("SimpleAssist Chatbot")
 
-# Initialize session
+# --- Initialize chat memory ---
 if "messages" not in st.session_state:
     saved_chat = load_chat()
-    
+
     if saved_chat:
         st.session_state.messages = saved_chat
     else:
@@ -17,41 +17,61 @@ if "messages" not in st.session_state:
             {"role": "system", "content": SYSTEM_PROMPT}
         ]
 
-# Display chat history
+# --- Display chat messages ---
 for msg in st.session_state.messages:
     if msg["role"] != "system":
-        st.write(f"**{msg['role'].capitalize()}:** {msg['content']}")
+        avatar = "🧑" if msg["role"] == "user" else "🤖"
 
-# Input box
-user_input = st.text_input("Type your message:")
+        with st.chat_message(msg["role"], avatar=avatar):
+            if "⚠️" in msg["content"]:
+                st.error(msg["content"])
+            else:
+                st.markdown(msg["content"])
 
-if st.button("Send"):
-    if user_input.strip():
-        # Add user message
-        st.session_state.messages.append({
-            "role": "user",
-            "content": user_input
-        })
+# --- Chat input (like ChatGPT) ---
+user_input = st.chat_input("Type your message...")
 
-        # Get AI response
-        reply = get_response(st.session_state.messages)
+if user_input:
+    # Show user message immediately
+    with st.chat_message("user", avatar="🧑"):
+        st.markdown(user_input)
 
-        # Add AI reply
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": reply
-        })
+    # Save user message
+    st.session_state.messages.append({
+        "role": "user",
+        "content": user_input
+    })
 
-        # Save chat locally
-        save_chat(st.session_state.messages)
+    # Show loading spinner
+    with st.chat_message("assistant", avatar="🤖"):
+        with st.spinner("Thinking..."):
+            reply = get_response(st.session_state.messages)
 
-        # Refresh UI
-        st.rerun()
+            # Display response
+            if "⚠️" in reply:
+                st.error(reply)
+            else:
+                st.markdown(reply)
 
-# Reset button
-if st.button("Reset Chat"):
-    st.session_state.messages = [
-        {"role": "system", "content": SYSTEM_PROMPT}
-    ]
+    # Save assistant reply
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": reply
+    })
+
+    # Save to JSON
     save_chat(st.session_state.messages)
-    st.rerun()
+
+# --- Sidebar (extra polish for marks) ---
+# with st.sidebar:
+#     st.header("Options")
+
+#     if st.button("Clear Chat"):
+#         st.session_state.messages = [
+#             {"role": "system", "content": SYSTEM_PROMPT}
+#         ]
+#         save_chat(st.session_state.messages)
+#         st.rerun()
+
+#     st.markdown("---")
+#     st.caption("SimpleAssist Chatbot\nUsing OpenAI API")
