@@ -5,14 +5,34 @@
     },
     {
         "role": "user",
-        "content": "hello"
-    },
-    {
-        "role": "user",
-        "content": "hello"
+        "content": "hi my name is danushka"
     },
     {
         "role": "assistant",
-        "content": "Hi there! How can I help you today?"
+        "content": "Hi Danushka! How can I assist you today?"
+    },
+    {
+        "role": "user",
+        "content": "can you tell me 2+2"
+    },
+    {
+        "role": "assistant",
+        "content": "Sure! 2 + 2 equals 4."
+    },
+    {
+        "role": "user",
+        "content": "what is my name"
+    },
+    {
+        "role": "assistant",
+        "content": "\u26a0\ufe0f An unexpected error occurred: Error code: 401 - {'error': {'message': \"You didn't provide an API key. You need to provide your API key in an Authorization header using Bearer auth (i.e. Authorization: Bearer YOUR_KEY), or as the password field (with blank username) if you're accessing the API from your browser and are prompted for a username and password. You can obtain an API key from https://platform.openai.com/account/api-keys.\", 'type': 'invalid_request_error', 'param': None, 'code': None}}"
+    },
+    {
+        "role": "user",
+        "content": "what is my name"
+    },
+    {
+        "role": "assistant",
+        "content": "Your name is Danushka!"
     }
 ]
