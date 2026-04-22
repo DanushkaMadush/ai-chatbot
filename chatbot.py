@@ -1,15 +1,15 @@
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+import streamlit as st
 
-load_dotenv()
+api_key = None
 
-# --- Validate API Key BEFORE starting ---
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    print(" ERROR: OPENAI_API_KEY not found in .env file")
-    print("Please create a .env file with: OPENAI_API_KEY=your-key-here")
-    exit(1)  # Stop the program
+try:
+    api_key = st.secrets["OPENAI_API_KEY"]
+except Exception:
+    load_dotenv()
+    api_key = os.getenv("OPENAI_API_KEY")
 
 client = OpenAI(api_key=api_key)
 

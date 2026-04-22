@@ -37,7 +37,6 @@ def trim_conversation_history(messages, max_messages=20):
 # ─────────────────────────────────────────
 # 1. CONFIGURATION
 # ─────────────────────────────────────────
-load_dotenv()
 
 # Page settings (must be the first Streamlit command)
 st.set_page_config(
@@ -51,11 +50,13 @@ You give clear and concise answers. If you are unsure, you say so honestly."""
 
 MODEL = "gpt-4o-mini"
 
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = None
 
-if not api_key:
-    st.error(" API key not found! Please create a .env file with OPENAI_API_KEY.")
-    st.stop()
+try:
+    api_key = st.secrets["OPENAI_API_KEY"]
+except Exception:
+    load_dotenv()
+    api_key = os.getenv("OPENAI_API_KEY")
 
 client = OpenAI(api_key=api_key)
 
