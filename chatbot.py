@@ -2,8 +2,13 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import streamlit as st
+from database import init_db, save_message
+import uuid
+
+init_db()
 
 api_key = None
+session_id = str(uuid.uuid4())
 
 try:
     api_key = st.secrets["OPENAI_API_KEY"]
@@ -19,6 +24,8 @@ conversation_history = [{"role": "system", "content": SYSTEM_PROMPT}]
 def chat(user_message):
     """Send message to AI with error handling."""
     conversation_history.append({"role": "user", "content": user_message})
+
+    save_message(session_id, "user", user_message)
     
     try:
         response = client.chat.completions.create(
@@ -29,6 +36,7 @@ def chat(user_message):
         )
         ai_reply = response.choices.message.content
         conversation_history.append({"role": "assistant", "content": ai_reply})
+        save_message(session_id, "assistant", ai_reply)
         return ai_reply
     
     except Exception as e:
