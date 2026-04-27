@@ -41,47 +41,48 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* App background */
-[data-testid="stAppViewContainer"] {
+html[data-theme="light"] [data-testid="stAppViewContainer"] {
     background-color: #ECE5DD;
 }
 
-/* Chat container spacing */
-[data-testid="stChatMessage"] {
-    padding: 8px 12px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    max-width: 75%;
-}
-
-[data-testid="stChatMessage"] {
-    padding: 8px 12px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    max-width: 75%;
-    border: none;
-}
-
-/* Remove ugly borders */
-[data-testid="stChatMessage"] {
-    border: none;
-}
-
-/* Input box styling */
-textarea {
-    border-radius: 20px !important;
-}
-
-/* Button styling */
-button {
-    border-radius: 20px !important;
-}
-
-/* Sidebar */
-[data-testid="stSidebar"] {
+html[data-theme="light"] [data-testid="stSidebar"] {
     background-color: #FFFFFF;
 }
 
+html[data-theme="light"] [data-testid="stChatMessageContent"] {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+[data-testid="stChatMessageContent"] {
+    border-radius: 10px;
+    padding: 10px;
+}
+
+[data-testid="stChatInput"] textarea {
+    border-radius: 20px !important;
+}
+
+[data-testid="stButton"] button {
+    border-radius: 20px !important;
+}
+
+[data-testid="stChatMessage"] {
+    margin-bottom: 12px;
+}
+            
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+html[data-theme="light"] h2 {
+    color: #075E54;
+}
+html[data-theme="dark"] h2 {
+    color: #25D366;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -108,7 +109,7 @@ if "messages" not in st.session_state:
 
 
 st.markdown("""
-<h2 style='color:#075E54;'>Your Personal Assistant</h2>
+<h2>Your Personal Assistant</h2>
 """, unsafe_allow_html=True)
 
 st.markdown("<hr style='border:1px solid #ddd;'>", unsafe_allow_html=True)
@@ -116,14 +117,6 @@ st.markdown("<hr style='border:1px solid #ddd;'>", unsafe_allow_html=True)
 st.markdown("*Powered by OpenAI GPT · Built with Python & Streamlit*")
 
 with st.sidebar:
-
-    st.markdown("""
-<style>
-h1, h2, h3 {
-    color: #075E54;
-}
-</style>
-""", unsafe_allow_html=True)
     
     st.header(" Settings")
     
