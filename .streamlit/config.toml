@@ -1,0 +1,9 @@
+[theme]
+base="light"
+
+primaryColor="#25D366"                 # WhatsApp green
+backgroundColor="#ECE5DD"              # Chat background
+secondaryBackgroundColor="#FFFFFF"     # Cards / sidebar
+textColor="#111111"
+
+font="sans serif"

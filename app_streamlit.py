@@ -6,8 +6,7 @@ import json
 from datetime import datetime
 
 def save_chat_history(messages):
-    """Save conversation to a JSON file with timestamp."""
-    # Remove system message
+
     export_messages = [m for m in messages if m["role"] != "system"]
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -19,10 +18,7 @@ def save_chat_history(messages):
     return filename
 
 def trim_conversation_history(messages, max_messages=20):
-    """
-    Keeps system prompt + last N messages.
-    Prevents token overflow and reduces cost.
-    """
+
     if not messages:
         return messages
 
@@ -34,16 +30,60 @@ def trim_conversation_history(messages, max_messages=20):
 
     return [system_message] + conversation
 
-# ─────────────────────────────────────────
-# 1. CONFIGURATION
-# ─────────────────────────────────────────
+# Page
 
-# Page settings (must be the first Streamlit command)
 st.set_page_config(
-    page_title="AI Chatbot",
+    page_title="Personal Assitant",
     page_icon="🤖",
-    layout="centered"
+    layout="wide"
 )
+
+st.markdown("""
+<style>
+
+/* App background */
+[data-testid="stAppViewContainer"] {
+    background-color: #ECE5DD;
+}
+
+/* Chat container spacing */
+[data-testid="stChatMessage"] {
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 75%;
+}
+
+[data-testid="stChatMessage"] {
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 75%;
+    border: none;
+}
+
+/* Remove ugly borders */
+[data-testid="stChatMessage"] {
+    border: none;
+}
+
+/* Input box styling */
+textarea {
+    border-radius: 20px !important;
+}
+
+/* Button styling */
+button {
+    border-radius: 20px !important;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #FFFFFF;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 SYSTEM_PROMPT = """You are a helpful, friendly, and knowledgeable AI assistant.
 You give clear and concise answers. If you are unsure, you say so honestly."""
@@ -66,13 +106,25 @@ if "messages" not in st.session_state:
         {"role": "system", "content": SYSTEM_PROMPT}
     ]
 
-# ─────────────────────────────────────────
-# 4. HEADER AND SIDEBAR
-# ─────────────────────────────────────────
-st.title(" AI Chatbot")
+
+st.markdown("""
+<h2 style='color:#075E54;'>Your Personal Assistant</h2>
+""", unsafe_allow_html=True)
+
+st.markdown("<hr style='border:1px solid #ddd;'>", unsafe_allow_html=True)
+
 st.markdown("*Powered by OpenAI GPT · Built with Python & Streamlit*")
 
 with st.sidebar:
+
+    st.markdown("""
+<style>
+h1, h2, h3 {
+    color: #075E54;
+}
+</style>
+""", unsafe_allow_html=True)
+    
     st.header(" Settings")
     
     temperature = st.slider(
@@ -95,7 +147,7 @@ with st.sidebar:
     
     st.divider()
 
-    st.subheader("🤖 Bot Persona")
+    st.subheader("Bot Persona")
 
     persona = st.selectbox(
         "Choose a persona:",
@@ -157,17 +209,11 @@ with st.sidebar:
         st.warning("No messages to save yet.")
 
 
-# ─────────────────────────────────────────
-# 5. DISPLAY CHAT HISTORY
-# ─────────────────────────────────────────
 # Loop through all messages (skip the system message)
 for message in st.session_state.messages[1:]:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# ─────────────────────────────────────────
-# 6. HANDLE NEW USER INPUT
-# ─────────────────────────────────────────
 # st.chat_input shows a text box at the bottom of the page
 if prompt := st.chat_input("Type your message here..."):
     
@@ -178,7 +224,7 @@ if prompt := st.chat_input("Type your message here..."):
     # Add user message to history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # ✨ Trim history BEFORE API call
+    # Trim history BEFORE API call
     st.session_state.messages = trim_conversation_history(st.session_state.messages)
     
     # Call the AI API and display response
