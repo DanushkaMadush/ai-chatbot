@@ -2,7 +2,7 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import streamlit as st
-from database import init_db, save_message
+from database import init_db, save_message, get_all_courses, get_course_details, save_unknown_question
 import uuid
 
 init_db()
@@ -18,11 +18,62 @@ except Exception:
 
 client = OpenAI(api_key=api_key)
 
-SYSTEM_PROMPT = "You are a helpful, friendly assistant."
+SYSTEM_PROMPT = """
+You are an Education Counselling Assistant.
+
+You help students choose degree programs such as:
+- Software Engineering
+- Cyber Security
+- Network Engineering
+- Business Management
+- Fashion Designing
+
+Use database facts when available.
+Give clear, short, helpful answers.
+"""
 conversation_history = [{"role": "system", "content": SYSTEM_PROMPT}]
 
+def handle_education_query(user_message):
+    msg = user_message.lower()
+
+    # list programs
+    if "list" in msg or "program" in msg:
+        courses = get_all_courses()
+        if not courses:
+            return "No courses available in database."
+
+        response = "Available Degree Programs:\n"
+        for c in courses:
+            response += f"- {c[0]} ({c[1]}) | {c[2]} | Fees: {c[3]} | {c[4]}\n"
+        return response
+
+    if "fees" in msg or "requirement" in msg or "validity" in msg:
+        for keyword in ["software", "cyber", "network", "business", "fashion"]:
+            if keyword in msg:
+                details = get_course_details(keyword)
+                if details:
+                    d = details[0]
+                    return (
+                        f"{d[0]}\n"
+                        f"Fees: {d[1]}\n"
+                        f"Requirements: {d[2]}\n"
+                        f"Validity: {d[3]}"
+                    )
+
+    # recommendation
+    if "recommend" in msg:
+        return "Tell me your interests (IT, Business, Fashion), and I’ll suggest a degree."
+
+    return None
+
 def chat(user_message):
-    """Send message to AI with error handling."""
+
+    db_response = handle_education_query(user_message)
+
+    if db_response:
+        save_message(session_id, "assistant", db_response)
+        return db_response
+
     conversation_history.append({"role": "user", "content": user_message})
 
     save_message(session_id, "user", user_message)
@@ -37,6 +88,7 @@ def chat(user_message):
         ai_reply = response.choices.message.content
         conversation_history.append({"role": "assistant", "content": ai_reply})
         save_message(session_id, "assistant", ai_reply)
+        save_unknown_question(user_message)
         return ai_reply
     
     except Exception as e:
