@@ -61,8 +61,58 @@ def handle_education_query(user_message):
                     )
 
     # recommendation
-    if "recommend" in msg:
-        return "Tell me your interests (IT, Business, Fashion), and I’ll suggest a degree."
+    if "recommend" in msg or "suggest" in msg:
+
+        courses = get_all_courses()
+
+        import re
+        numbers = re.findall(r"\d+", msg)
+        budget = int(numbers[0]) if numbers else None
+
+        # keyword matching
+        interest_map = {
+            "it": ["software engineering", "cyber security", "network engineering"],
+            "tech": ["software engineering", "cyber security", "network engineering"],
+            "security": ["cyber security"],
+            "network": ["network engineering"],
+            "business": ["business management"],
+            "management": ["business management"],
+            "fashion": ["fashion designing"],
+            "design": ["fashion designing"]
+        }
+
+        matched_courses = []
+
+        for key, values in interest_map.items():
+            if key in msg:
+                for c in courses:
+                    for v in values:
+                        if v.lower() in c[0].lower():
+                            matched_courses.append(c)
+
+        if not matched_courses:
+            matched_courses = courses
+
+        if budget:
+            filtered = []
+            for c in matched_courses:
+                try:
+                    fee = int(c[3].replace("$", ""))
+                    if fee <= budget:
+                        filtered.append(c)
+                except:
+                    continue
+            matched_courses = filtered
+        
+        if not matched_courses:
+            return "No degrees found within your budget."
+
+        # format response
+        response = "Recommended Degrees for You:\n"
+        for c in matched_courses:
+            response += f"- {c[0]} ({c[1]}) | {c[2]} | Fees: {c[3]}\n"
+
+        return response
 
     return None
 

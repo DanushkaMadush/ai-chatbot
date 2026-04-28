@@ -33,8 +33,8 @@ def trim_conversation_history(messages, max_messages=20):
 # Page
 
 st.set_page_config(
-    page_title="Personal Assitant",
-    page_icon="🤖",
+    page_title="SmartEdu Counsellor",
+    page_icon="🎓",
     layout="wide"
 )
 
@@ -109,12 +109,28 @@ if "messages" not in st.session_state:
 
 
 st.markdown("""
-<h2>Your Personal Assistant</h2>
+<h2>EduGuide AI – Degree Counselling Assistant</h2>
 """, unsafe_allow_html=True)
 
 st.markdown("<hr style='border:1px solid #ddd;'>", unsafe_allow_html=True)
 
-st.markdown("*Powered by OpenAI GPT · Built with Python & Streamlit*")
+st.markdown("### ⚡ Quick Actions")
+
+col1, col2, col3 = st.columns(3)
+
+quick_prompt = None
+
+with col1:
+    if st.button("🎓 List Programs"):
+        quick_prompt = "list degree programs"
+
+with col2:
+    if st.button("Affordable Degrees"):
+        quick_prompt = "recommend degree under 4000"
+
+with col3:
+    if st.button("Recommend for Me"):
+        quick_prompt = "recommend IT degrees"
 
 with st.sidebar:
     
@@ -207,8 +223,15 @@ for message in st.session_state.messages[1:]:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+user_input = st.chat_input("Type your message here...")
+# If button clicked, use quick prompt
+if quick_prompt:
+    prompt = quick_prompt
+else:
+    prompt = user_input
+
 # st.chat_input shows a text box at the bottom of the page
-if prompt := st.chat_input("Type your message here..."):
+if prompt:
     
     # Display user message immediately
     with st.chat_message("user"):
