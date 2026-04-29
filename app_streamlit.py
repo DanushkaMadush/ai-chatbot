@@ -114,22 +114,22 @@ st.markdown("""
 
 st.markdown("<hr style='border:1px solid #ddd;'>", unsafe_allow_html=True)
 
-st.markdown("### ⚡ Quick Actions")
+st.markdown("### Explore Options")
 
 col1, col2, col3 = st.columns(3)
 
 quick_prompt = None
 
 with col1:
-    if st.button("🎓 List Programs"):
+    if st.button("🎓 List Programs", use_container_width=True):
         quick_prompt = "list degree programs"
 
 with col2:
-    if st.button("Affordable Degrees"):
+    if st.button("Affordable Degrees", use_container_width=True):
         quick_prompt = "recommend degree under 4000"
 
 with col3:
-    if st.button("Recommend for Me"):
+    if st.button("Recommend for Me", use_container_width=True):
         quick_prompt = "recommend IT degrees"
 
 with st.sidebar:
@@ -161,28 +161,33 @@ with st.sidebar:
     persona = st.selectbox(
         "Choose a persona:",
         [
-            "Helpful Assistant",
-            "Python Tutor",
-            "Creative Writer",
-            "Debate Partner",
-            "Custom"
+            "Career Advisor",
+            "University Consultant",
+            "Budget Planner",
+            "Friendly Guide",
         ]
     )
 
+    BASE_PROMPT = """
+        You are an Education Counselling Assistant.
+        You help students choose degree programs such as:
+            - Software Engineering
+            - Cyber Security
+            - Network Engineering
+            - Business Management
+            - Fashion Designing
+        Use database facts when available.
+        Give clear, short, helpful answers.
+        """
+
     persona_prompts = {
-        "Helpful Assistant": "You are a helpful, friendly AI assistant.",
-        "Python Tutor": "You are an expert Python programming tutor. Explain code clearly with examples. Always encourage the student.",
-        "Creative Writer": "You are a creative writing assistant. Help with stories, poems, and creative content with vivid imagination.",
-        "Debate Partner": "You are a debate partner who challenges ideas thoughtfully and argues different perspectives.",
+        "Career Advisor": "You are a professional career advisor helping students choose suitable degree programs based on their interests and future job opportunities.",
+        "University Consultant": "You are a university consultant providing accurate information about degree programs, entry requirements, and institutions.",
+        "Budget Planner": "You are an education budget advisor helping students find affordable degree programs based on their financial constraints.",
+        "Friendly Guide": "You are a friendly and supportive education guide who explains degree options clearly and helps students make confident decisions."
     }
 
-    if persona == "Custom":
-        system_prompt = st.text_area(
-            "Write your own persona:",
-            "You are a helpful assistant."
-        )
-    else:
-        system_prompt = persona_prompts[persona]
+    system_prompt = BASE_PROMPT + "\n" + persona_prompts[persona]
     
     if st.button("Apply Persona", use_container_width=True):
         st.session_state.messages = [
