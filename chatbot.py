@@ -2,10 +2,11 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import streamlit as st
-from database import init_db, save_message, get_all_courses, get_course_details, save_unknown_question
+from database import init_db, save_message, get_all_courses, get_course_details, save_unknown_question, get_unknown_question_count, seed_courses
 import uuid
 
 init_db()
+seed_courses()
 
 api_key = None
 session_id = str(uuid.uuid4())
@@ -135,10 +136,14 @@ def chat(user_message):
             temperature=0.7,
             max_tokens=500
         )
-        ai_reply = response.choices.message.content
+        ai_reply = response.choices[0].message.content
         conversation_history.append({"role": "assistant", "content": ai_reply})
         save_message(session_id, "assistant", ai_reply)
         save_unknown_question(user_message)
+        count = get_unknown_question_count(user_message)
+
+        if count > 1:
+            ai_reply += "\n\n(Note: This question has been asked before. The system is learning and improving its knowledge base.)"
         return ai_reply
     
     except Exception as e:
@@ -157,22 +162,3 @@ def chat(user_message):
             return " Error: No internet connection. Please check your network."
         else:
             return f"Unexpected error: {error_msg}"
-
-print("Chatbot Ready! (Type 'quit' to exit)\n")
-
-while True:
-    user_input = input("You: ").strip()
-    
-    if not user_input:
-        continue
-    if user_input.lower() in {"quit", "exit"}:
-        print("AI: Goodbye!")
-        break
-    if user_input.lower() == "reset":
-        conversation_history.clear()
-        conversation_history.append({"role": "system", "content": SYSTEM_PROMPT})
-        print("Chat reset.\n")
-        continue
-    
-    reply = chat(user_input)
-    print(f"AI: {reply}\n")

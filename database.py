@@ -91,18 +91,37 @@ def save_unknown_question(question):
     conn.commit()
     conn.close()
 
+
+def get_unknown_question_count(question):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+    cursor.execute(
+        "SELECT COUNT(*) FROM unknown_questions WHERE question = ?",
+        (question,)
+    )
+    
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count
+
+
 def seed_courses():
     conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM courses")
+    count = cursor.fetchone()[0]
 
-    conn.execute("""
-    INSERT INTO courses (name, field, duration, fees, institute, requirements, validity)
-    VALUES 
-    ('Software Engineering', 'IT', '4 years', '$4000', 'ESOFT Metro Campus', 'Advanced Lavel', 'International'),
-    ('Cyber Security', 'IT', '4 years', '$4500', 'ESOFT Metro Campus', 'Advanced Lavel', 'International'),
-    ('Network Engineering', 'IT', '3 years', '$3500', 'ESOFT Metro Campus', Advanced Lavel', 'Local'),
-    ('Business Management', 'Business', '3 years', '$3000', 'ESOFT Metro Campus', 'Advanced Lavel', 'International'),
-    ('Fashion Designing', 'Design', '3 years', '$3200', 'ESOFT Metro Campus', 'Advanced Lavel', 'Local')
-    """)
+    if count == 0:
+        conn.execute("""
+            INSERT INTO courses (name, field, duration, fees, institute, requirements, validity)
+            VALUES 
+            ('Software Engineering', 'IT', '4 years', '$4000', 'ESOFT Metro Campus', 'Advanced Level', 'International'),
+            ('Cyber Security', 'IT', '4 years', '$4500', 'ESOFT Metro Campus', 'Advanced Level', 'International'),
+            ('Network Engineering', 'IT', '3 years', '$3500', 'ESOFT Metro Campus', 'Advanced Level', 'Local'),
+            ('Business Management', 'Business', '3 years', '$3000', 'ESOFT Metro Campus', 'Advanced Level', 'International'),
+            ('Fashion Designing', 'Design', '3 years', '$3200', 'ESOFT Metro Campus', 'Advanced Level', 'Local')
+        """)
 
     conn.commit()
     conn.close()

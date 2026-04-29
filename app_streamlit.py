@@ -4,6 +4,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 from datetime import datetime
+from chatbot import chat
 
 def save_chat_history(messages):
 
@@ -258,7 +259,7 @@ if prompt:
                     temperature=temperature,
                     max_tokens=max_tokens
                 )
-                ai_reply = response.choices[0].message.content
+                ai_reply = chat(prompt)
                 st.markdown(ai_reply)
                 
                 # Add AI reply to history
