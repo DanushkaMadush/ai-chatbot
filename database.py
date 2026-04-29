@@ -97,11 +97,11 @@ def seed_courses():
     conn.execute("""
     INSERT INTO courses (name, field, duration, fees, institute, requirements, validity)
     VALUES 
-    ('Software Engineering', 'IT', '4 years', '$4000', 'ABC University', 'A/L Maths', 'International'),
-    ('Cyber Security', 'IT', '4 years', '$4500', 'XYZ Institute', 'A/L Maths', 'International'),
-    ('Network Engineering', 'IT', '3 years', '$3500', 'Tech College', 'A/L Maths', 'Local'),
-    ('Business Management', 'Business', '3 years', '$3000', 'Business School', 'Any stream', 'International'),
-    ('Fashion Designing', 'Design', '3 years', '$3200', 'Design Academy', 'O/L pass', 'Local')
+    ('Software Engineering', 'IT', '4 years', '$4000', 'ESOFT Metro Campus', 'Advanced Lavel', 'International'),
+    ('Cyber Security', 'IT', '4 years', '$4500', 'ESOFT Metro Campus', 'Advanced Lavel', 'International'),
+    ('Network Engineering', 'IT', '3 years', '$3500', 'ESOFT Metro Campus', Advanced Lavel', 'Local'),
+    ('Business Management', 'Business', '3 years', '$3000', 'ESOFT Metro Campus', 'Advanced Lavel', 'International'),
+    ('Fashion Designing', 'Design', '3 years', '$3200', 'ESOFT Metro Campus', 'Advanced Lavel', 'Local')
     """)
 
     conn.commit()
